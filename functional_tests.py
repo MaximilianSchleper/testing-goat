@@ -1,5 +1,8 @@
-import unittest
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import unittest
+import time
 
 class NewVisitorTest(unittest.TestCase):
     def setUp(self):
@@ -15,18 +18,28 @@ class NewVisitorTest(unittest.TestCase):
 
         # She notices the page title and header mention to-do lists
         self.assertIn("To-Do", self.browser.title)
+        header_text = self.browser.find_element(By.TAG_NAME, "h1")
+        self.assertIn("To-Do", header_text)
 
         # She is invited to ende a to-do item straigt away
-        self.fail("Finish the test!")
+        inputbox = self.browser.find_element(By.ID, "id_new_item")
+        self.assertEqual(inputbox.get_attribute("placeholder"), "Ender a to-to item")
 
         # She types "Buy peacock feathers" into a text box
-        # (Edith's hoppy is tying fly-fishing lures)
+        # (Edith's hobby is tying fly-fishing lures)
+        inputbox.send_keys("Buy peacock feathers")
 
         # When she hits enter, the page updates, and now the page lists
         # "1: Buy peacoock feathers" as an item in a to-do list
+        inputbox.sendkeys(Keys.ENTER)
+        time.sleep(1)
 
+        table = self.browser.find_element(By.ID, "id_list_table")
+        rows = table.find_elements(By.TAG_NAME, "tr")
+        self.asserTrue(any(row.text == "1: Buy peacock feathers" for row in rows))
         # There is still a text box inviting her to add another item.
         # She enters "Use peacock feathers to make a fly" (Edith is very methodical)
+        self.fail("Finish the test!")
 
         # The page updates again, and now shows both items on her list
 
